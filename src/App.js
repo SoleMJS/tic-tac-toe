@@ -1,55 +1,60 @@
 // App.js
-import React, { useState } from 'react'
+import React from 'react'
 import './App.css'
 import { Field } from './Field'
 import { Information } from './Information'
 import { WIN_PATTERNS } from './constant/win-patterns'
+import store from './store'
+
+const UPDATE_FIELD = 'UPDATE_FIELD'
+const RESTART_GAME = 'RESTART_GAME'
+
+const checkWinner = currentField => {
+	const lines = WIN_PATTERNS
+
+	for (let i = 0; i < lines.length; i++) {
+		const [a, b, c] = lines[i]
+		if (
+			currentField[a] &&
+			currentField[a] === currentField[b] &&
+			currentField[a] === currentField[c]
+		) {
+			return true
+		}
+	}
+
+	return false
+}
 
 export const App = () => {
-	const [currentPlayer, setCurrentPlayer] = useState('X')
-	const [isGameEnded, setIsGameEnded] = useState(false)
-	const [isDraw, setIsDraw] = useState(false)
-	const [field, setField] = useState(Array(9).fill(''))
+	const { currentPlayer, isGameEnded, isDraw, field } = store.getState()
 
 	const handleCellClick = index => {
 		if (!field[index] && !isGameEnded) {
 			const updatedField = [...field]
 			updatedField[index] = currentPlayer
-			setField(updatedField)
 
 			if (checkWinner(updatedField)) {
-				setIsGameEnded(true)
+				store.dispatch({ type: UPDATE_FIELD, payload: { isGameEnded: true } })
 			} else if (updatedField.every(cell => cell !== '')) {
-				setIsGameEnded(true)
-				setIsDraw(true)
+				store.dispatch({
+					type: UPDATE_FIELD,
+					payload: { isGameEnded: true, isDraw: true },
+				})
 			} else {
-				setCurrentPlayer(currentPlayer === 'X' ? 'O' : 'X')
+				store.dispatch({
+					type: UPDATE_FIELD,
+					payload: {
+						field: updatedField,
+						currentPlayer: currentPlayer === 'X' ? 'O' : 'X',
+					},
+				})
 			}
 		}
 	}
 
 	const handleRestartClick = () => {
-		setCurrentPlayer('X')
-		setIsGameEnded(false)
-		setIsDraw(false)
-		setField(Array(9).fill(''))
-	}
-
-	const checkWinner = currentField => {
-		const lines = WIN_PATTERNS
-
-		for (let i = 0; i < lines.length; i++) {
-			const [a, b, c] = lines[i]
-			if (
-				currentField[a] &&
-				currentField[a] === currentField[b] &&
-				currentField[a] === currentField[c]
-			) {
-				return true
-			}
-		}
-
-		return false
+		store.dispatch({ type: RESTART_GAME })
 	}
 
 	return (
