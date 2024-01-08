@@ -1,48 +1,13 @@
 .App {
-	text-align: center;
+	@apply text-center;
 }
 
 h1 {
-	color: #333;
+	@apply text-gray-800;
 }
 
 .restart-button {
-	margin-top: 10px;
-	padding: 10px;
-	.App {
-		text-align: center;
-	}
-
-	h1 {
-		color: #333;
-	}
-
-	.restart-button {
-		@apply mt-4 py-2 px-4 text-base cursor-pointer;
-	}
-
-	.field {
-		@apply grid grid-cols-3 gap-5 justify-center;
-	}
-
-	.cell {
-		@apply w-20 h-20 flex items-center justify-center text-3xl border border-solid border-gray-300 cursor-pointer;
-
-		&.X {
-			color: #f00;
-		}
-
-		&.O {
-			color: #00f;
-		}
-	}
-
-	.information {
-		@apply mt-4 text-lg text-gray-800;
-	}
-
-	font-size: 16px;
-	cursor: pointer;
+	@apply mt-10 px-4 py-2 bg-blue-500 text-white font-semibold rounded-md text-lg cursor-pointer;
 }
 
 .field {
@@ -53,26 +18,17 @@ h1 {
 }
 
 .cell {
-	width: 100px;
-	height: 100px;
-	display: flex;
-	align-items: center;
-	justify-content: center;
-	font-size: 24px;
-	border: 1px solid #ccc;
-	cursor: pointer;
+	@apply w-20 h-20 flex items-center justify-center text-3xl border border-solid border-gray-300;
 }
 
 .cell.X {
-	color: #f00;
+	@apply text-red-500;
 }
 
 .cell.O {
-	color: #00f;
+	@apply text-blue-500;
 }
 
 .information {
-	margin: 10px 0;
-	font-size: 18px;
-	color: #333;
+	@apply mt-10 text-lg text-gray-800;
 }

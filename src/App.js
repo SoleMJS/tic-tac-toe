@@ -14,11 +14,21 @@ class App extends Component {
 			updatedField[index] = currentPlayer
 
 			if (this.checkWinner(updatedField)) {
-				dispatch({ type: UPDATE_FIELD, payload: { isGameEnded: true } })
+				dispatch({
+					type: UPDATE_FIELD,
+					payload: {
+						field: updatedField,
+						isGameEnded: true,
+					},
+				})
 			} else if (updatedField.every(cell => cell !== '')) {
 				dispatch({
 					type: UPDATE_FIELD,
-					payload: { isGameEnded: true, isDraw: true },
+					payload: {
+						field: updatedField,
+						isGameEnded: true,
+						isDraw: true,
+					},
 				})
 			} else {
 				dispatch({
