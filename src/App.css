@@ -9,6 +9,38 @@ h1 {
 .restart-button {
 	margin-top: 10px;
 	padding: 10px;
+	.App {
+		text-align: center;
+	}
+
+	h1 {
+		color: #333;
+	}
+
+	.restart-button {
+		@apply mt-4 py-2 px-4 text-base cursor-pointer;
+	}
+
+	.field {
+		@apply grid grid-cols-3 gap-5 justify-center;
+	}
+
+	.cell {
+		@apply w-20 h-20 flex items-center justify-center text-3xl border border-solid border-gray-300 cursor-pointer;
+
+		&.X {
+			color: #f00;
+		}
+
+		&.O {
+			color: #00f;
+		}
+	}
+
+	.information {
+		@apply mt-4 text-lg text-gray-800;
+	}
+
 	font-size: 16px;
 	cursor: pointer;
 }

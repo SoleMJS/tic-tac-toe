@@ -1,44 +1,19 @@
-// App.js
-import React from 'react'
-import { Provider, useDispatch, useSelector } from 'react-redux'
-import './App.css'
+import React, { Component } from 'react'
+import { connect } from 'react-redux'
 import { Field } from './Field'
 import { Information } from './Information'
 import { WIN_PATTERNS } from './constant/win-patterns'
-import store from './store'
+import { RESTART_GAME, UPDATE_FIELD } from './store'
 
-const UPDATE_FIELD = 'UPDATE_FIELD'
-const RESTART_GAME = 'RESTART_GAME'
+class App extends Component {
+	handleCellClick = index => {
+		const { field, isGameEnded, currentPlayer, dispatch } = this.props
 
-const checkWinner = currentField => {
-	const lines = WIN_PATTERNS
-
-	for (let i = 0; i < lines.length; i++) {
-		const [a, b, c] = lines[i]
-		if (
-			currentField[a] &&
-			currentField[a] === currentField[b] &&
-			currentField[a] === currentField[c]
-		) {
-			return true
-		}
-	}
-
-	return false
-}
-
-const App = () => {
-	const dispatch = useDispatch()
-	const { currentPlayer, isGameEnded, isDraw, field } = useSelector(
-		state => state
-	)
-
-	const handleCellClick = index => {
 		if (!field[index] && !isGameEnded) {
 			const updatedField = [...field]
 			updatedField[index] = currentPlayer
 
-			if (checkWinner(updatedField)) {
+			if (this.checkWinner(updatedField)) {
 				dispatch({ type: UPDATE_FIELD, payload: { isGameEnded: true } })
 			} else if (updatedField.every(cell => cell !== '')) {
 				dispatch({
@@ -57,30 +32,53 @@ const App = () => {
 		}
 	}
 
-	const handleRestartClick = () => {
-		store.dispatch({ type: RESTART_GAME })
+	handleRestartClick = () => {
+		this.props.dispatch({ type: RESTART_GAME })
 	}
 
-	return (
-		<div className='App'>
-			<h1>Крестики-Нолики</h1>
-			<Information
-				currentPlayer={currentPlayer}
-				isGameEnded={isGameEnded}
-				isDraw={isDraw}
-			/>
-			<Field field={field} onCellClick={handleCellClick} />
-			<button className='restart-button' onClick={handleRestartClick}>
-				Начать заново
-			</button>
-		</div>
-	)
+	checkWinner = currentField => {
+		const lines = this.props.WIN_PATTERNS
+
+		for (let i = 0; i < lines.length; i++) {
+			const [a, b, c] = lines[i]
+			if (
+				currentField[a] &&
+				currentField[a] === currentField[b] &&
+				currentField[a] === currentField[c]
+			) {
+				return true
+			}
+		}
+
+		return false
+	}
+
+	render() {
+		const { currentPlayer, isGameEnded, isDraw, field } = this.props
+
+		return (
+			<div className='App'>
+				<h1>Крестики-Нолики</h1>
+				<Information
+					currentPlayer={currentPlayer}
+					isGameEnded={isGameEnded}
+					isDraw={isDraw}
+				/>
+				<Field field={field} onCellClick={this.handleCellClick} />
+				<button className='restart-button' onClick={this.handleRestartClick}>
+					Начать заново
+				</button>
+			</div>
+		)
+	}
 }
 
-export const AppWrapper = () => {
-	return (
-		<Provider store={store}>
-			<App />
-		</Provider>
-	)
-}
+const mapStateToProps = state => ({
+	currentPlayer: state.currentPlayer,
+	isGameEnded: state.isGameEnded,
+	isDraw: state.isDraw,
+	field: state.field,
+	WIN_PATTERNS: WIN_PATTERNS,
+})
+
+export default connect(mapStateToProps)(App)

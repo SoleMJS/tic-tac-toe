@@ -1,17 +1,19 @@
-// Information.js
-import React from 'react'
+import React, { Component } from 'react'
 import './App.css'
 
-export const Information = ({ currentPlayer, isGameEnded, isDraw }) => {
-	let status
+export class Information extends Component {
+	render() {
+		const { currentPlayer, isGameEnded, isDraw } = this.props
+		let status
 
-	if (isDraw) {
-		status = 'Ничья'
-	} else if (isGameEnded) {
-		status = `Победа: ${currentPlayer === 'X' ? 'Крестиков' : 'Ноликов'}`
-	} else {
-		status = `Ходит: ${currentPlayer}`
+		if (isDraw) {
+			status = 'Ничья'
+		} else if (isGameEnded) {
+			status = `Победа: ${currentPlayer === 'X' ? 'Крестиков' : 'Ноликов'}`
+		} else {
+			status = `Ходит: ${currentPlayer}`
+		}
+
+		return <div className='information'>{status}</div>
 	}
-
-	return <div className='information'>{status}</div>
 }

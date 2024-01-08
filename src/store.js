@@ -1,7 +1,7 @@
 import { createStore } from 'redux'
 
-const UPDATE_FIELD = 'UPDATE_FIELD'
-const RESTART_GAME = 'RESTART_GAME'
+export const UPDATE_FIELD = 'UPDATE_FIELD'
+export const RESTART_GAME = 'RESTART_GAME'
 
 const initialState = {
 	currentPlayer: 'X',
