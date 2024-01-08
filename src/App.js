@@ -1,5 +1,6 @@
 // App.js
 import React from 'react'
+import { Provider, useDispatch, useSelector } from 'react-redux'
 import './App.css'
 import { Field } from './Field'
 import { Information } from './Information'
@@ -26,8 +27,11 @@ const checkWinner = currentField => {
 	return false
 }
 
-export const App = () => {
-	const { currentPlayer, isGameEnded, isDraw, field } = store.getState()
+const App = () => {
+	const dispatch = useDispatch()
+	const { currentPlayer, isGameEnded, isDraw, field } = useSelector(
+		state => state
+	)
 
 	const handleCellClick = index => {
 		if (!field[index] && !isGameEnded) {
@@ -35,14 +39,14 @@ export const App = () => {
 			updatedField[index] = currentPlayer
 
 			if (checkWinner(updatedField)) {
-				store.dispatch({ type: UPDATE_FIELD, payload: { isGameEnded: true } })
+				dispatch({ type: UPDATE_FIELD, payload: { isGameEnded: true } })
 			} else if (updatedField.every(cell => cell !== '')) {
-				store.dispatch({
+				dispatch({
 					type: UPDATE_FIELD,
 					payload: { isGameEnded: true, isDraw: true },
 				})
 			} else {
-				store.dispatch({
+				dispatch({
 					type: UPDATE_FIELD,
 					payload: {
 						field: updatedField,
@@ -70,5 +74,13 @@ export const App = () => {
 				Начать заново
 			</button>
 		</div>
+	)
+}
+
+export const AppWrapper = () => {
+	return (
+		<Provider store={store}>
+			<App />
+		</Provider>
 	)
 }
