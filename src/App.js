@@ -1,5 +1,4 @@
-// App.js
-import React from 'react'
+import React, { useEffect, useState } from 'react'
 import './App.css'
 import { Field } from './Field'
 import { Information } from './Information'
@@ -9,15 +8,15 @@ import store from './store'
 const UPDATE_FIELD = 'UPDATE_FIELD'
 const RESTART_GAME = 'RESTART_GAME'
 
-const checkWinner = currentField => {
+const checkWinner = (currentField, currentPlayer) => {
 	const lines = WIN_PATTERNS
 
 	for (let i = 0; i < lines.length; i++) {
 		const [a, b, c] = lines[i]
 		if (
-			currentField[a] &&
-			currentField[a] === currentField[b] &&
-			currentField[a] === currentField[c]
+			currentField[a] === currentPlayer &&
+			currentField[b] === currentPlayer &&
+			currentField[c] === currentPlayer
 		) {
 			return true
 		}
@@ -27,29 +26,56 @@ const checkWinner = currentField => {
 }
 
 export const App = () => {
-	const { currentPlayer, isGameEnded, isDraw, field } = store.getState()
+	const [, forceUpdate] = useState()
+
+	useEffect(() => {
+		const handleStateChange = () => {
+			forceUpdate({})
+		}
+
+		const unsubscribe = store.subscribe(handleStateChange)
+
+		return () => {
+			unsubscribe()
+		}
+	}, [])
 
 	const handleCellClick = index => {
-		if (!field[index] && !isGameEnded) {
-			const updatedField = [...field]
-			updatedField[index] = currentPlayer
+		const state = store.getState()
 
-			if (checkWinner(updatedField)) {
-				store.dispatch({ type: UPDATE_FIELD, payload: { isGameEnded: true } })
+		if (!state.isGameEnded && !state.field[index]) {
+			const updatedField = [...state.field]
+			updatedField[index] = state.currentPlayer
+
+			let gameEnded = false
+			let isDraw = false
+
+			console.log(`Updated Field: ${updatedField}`)
+
+			if (checkWinner(updatedField, state.currentPlayer)) {
+				gameEnded = true
 			} else if (updatedField.every(cell => cell !== '')) {
-				store.dispatch({
-					type: UPDATE_FIELD,
-					payload: { isGameEnded: true, isDraw: true },
-				})
-			} else {
-				store.dispatch({
-					type: UPDATE_FIELD,
-					payload: {
-						field: updatedField,
-						currentPlayer: currentPlayer === 'X' ? 'O' : 'X',
-					},
-				})
+				gameEnded = true
+				isDraw = true
 			}
+
+			console.log(
+				`Game Ended: ${gameEnded}, Is Draw: ${isDraw}, Current Player: ${state.currentPlayer}`
+			)
+
+			store.dispatch({
+				type: UPDATE_FIELD,
+				payload: {
+					field: updatedField,
+					currentPlayer: gameEnded
+						? state.currentPlayer
+						: state.currentPlayer === 'X'
+						? 'O'
+						: 'X',
+					isGameEnded: gameEnded,
+					isDraw: isDraw,
+				},
+			})
 		}
 	}
 
@@ -61,11 +87,11 @@ export const App = () => {
 		<div className='App'>
 			<h1>Крестики-Нолики</h1>
 			<Information
-				currentPlayer={currentPlayer}
-				isGameEnded={isGameEnded}
-				isDraw={isDraw}
+				currentPlayer={store.getState().currentPlayer}
+				isGameEnded={store.getState().isGameEnded}
+				isDraw={store.getState().isDraw}
 			/>
-			<Field field={field} onCellClick={handleCellClick} />
+			<Field field={store.getState().field} onCellClick={handleCellClick} />
 			<button className='restart-button' onClick={handleRestartClick}>
 				Начать заново
 			</button>
