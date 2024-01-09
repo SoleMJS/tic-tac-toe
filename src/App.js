@@ -1,4 +1,3 @@
-// App.js
 import React from 'react'
 import { Provider, useDispatch, useSelector } from 'react-redux'
 import './App.css'
@@ -39,11 +38,14 @@ const App = () => {
 			updatedField[index] = currentPlayer
 
 			if (checkWinner(updatedField)) {
-				dispatch({ type: UPDATE_FIELD, payload: { isGameEnded: true } })
+				dispatch({
+					type: UPDATE_FIELD,
+					payload: { field: updatedField, isGameEnded: true },
+				})
 			} else if (updatedField.every(cell => cell !== '')) {
 				dispatch({
 					type: UPDATE_FIELD,
-					payload: { isGameEnded: true, isDraw: true },
+					payload: { field: updatedField, isGameEnded: true, isDraw: true },
 				})
 			} else {
 				dispatch({
